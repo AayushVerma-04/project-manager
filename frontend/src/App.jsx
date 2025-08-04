@@ -7,7 +7,6 @@ import Tasks from "./pages/Tasks";
 import Projects from "./pages/Projects";
 import Home from "./pages/Home";
 import Notification from "./pages/Notification";
-import JoinProject from "./pages/joinProject";
 import CreateProject from "./pages/CreateProject";
 import MainLayout from "./layouts/MainLayout";
 import Project from "./pages/Project";
@@ -67,14 +66,6 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CreateProject />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/join-project"
-          element={
-            <ProtectedRoute>
-              <JoinProject />
             </ProtectedRoute>
           }
         />
