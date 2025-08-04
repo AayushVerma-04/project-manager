@@ -6,8 +6,8 @@ const LandingPage = () => {
   return (
     <div className="h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
       <div className="text-center">
-        <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">Task Manager</h1>
-        <p className="text-2xl opacity-90">Overwhelmed with tasks? We got you!</p>
+        <h1 className="text-5xl font-bold mb-4 drop-shadow-lg">Project Manager</h1>
+        <p className="text-2xl opacity-90">Wanna coordinate team projects? We got you!</p>
         <p className="text-lg opacity-90">Start your journey now</p>
       </div>
 
