@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const path = require('path');
+const app = express();
 
 // Serve static files from frontend
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
@@ -24,7 +25,6 @@ app.get('*', (req, res) => {
 const mongodbURL = process.env.mongodbURL;
 const PORT = process.env.PORT || 3000;
 
-const app = express();
 app.use(express.json());
 app.use(cors());
 
