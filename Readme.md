@@ -49,6 +49,7 @@ https://project-manager-backend-tmyq.onrender.com
 - **jsonwebtoken (JWT):** For creating and verifying secure authentication tokens.
 - **bcrypt.js:** For hashing passwords.
 - **CORS:** Node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
+- **Render:** Deployment Platform
 
 ## ⚙️ Setup Instructions
 
@@ -116,27 +117,6 @@ npm run dev # or vite
 ```
 
 The frontend will typically run on [http://localhost:5173](http://localhost:5173) (or another port depending on Vite's default).
-
-## 🚀 Deployment on Render
-
-This application is designed for deployment on Render, treating the frontend and backend as separate services.
-
-### 1. Deploying the Backend
-- Create a new Web Service on Render.
-- **Root Directory:** Set to `backend/`.
-- **Build Command:** `npm install`.
-- **Start Command:** `npm start`.
-- **Environment Variables:** Add `PORT`, `MONGO_URI`, `JWT_SECRET`, and any other backend-specific environment variables.
-
-### 2. Deploying the Frontend
-- Create another Web Service on Render.
-- **Root Directory:** Set to `frontend/`.
-- **Build Command:** `npm install && npm run build`.
-- **Publish Directory:** `dist`.
-- **Start Command:** Leave empty (Render serves static files automatically).
-- **Environment Variables:** Add `VITE_API_BASE_URL` and set its value to the External URL of your deployed backend service. Remember to redeploy the frontend after setting this.
-
-For more detailed deployment instructions, refer to Render's official documentation.
 
 ## 🤝 Contributing
 
