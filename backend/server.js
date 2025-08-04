@@ -11,12 +11,12 @@ const path = require('path');
 const app = express();
 
 // Serve static files from frontend
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-// Fallback to index.html for SPA
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-});
+// // Fallback to index.html for SPA
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+// });
 
 // Your existing routes
 // app.use('/api', yourRoutes);
@@ -34,13 +34,13 @@ app.use("/api/project", projectRouter);
 
 // const path = require('path');
 
-// // Serve frontend static files
-// app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-// // Fallback to index.html for SPA
-// app.get(/^\/(?!api).*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-// });
+// Fallback to index.html for SPA
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 mongoose
   .connect(mongodbURL)
