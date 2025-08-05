@@ -15,7 +15,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white shadow-md px-6 py-3 flex justify-between items-center mb-5">
-      <div className="text-xl font-bold text-indigo-600">{user.username}'s Manager</div>
+      <div className="text-xl font-bold text-indigo-600">{user ? `${user.username}'s Manager` : 'Project Manager'}</div>
 
       <div className="flex gap-6 items-center text-gray-700">
         <Link to="/home" className="hover:text-indigo-600">Home</Link>
