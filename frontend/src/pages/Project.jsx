@@ -108,7 +108,7 @@ const Project = () => {
     if (window.confirm("Are you sure you want to leave this project?")) {
       try {
         await axios.delete(
-          `${baseURL}/api/project/${projectId}/leave`,
+          `${baseUrl}/api/project/${projectId}/leave`,
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         //console.log("Successfully left project:", projectId);
@@ -125,7 +125,7 @@ const Project = () => {
     if (window.confirm("Are you sure you want to permanently delete this project? This action cannot be undone.")) {
       try {
         await axios.delete(
-          `${baseURL}/api/project/${projectId}/delete`,
+          `${baseUrl}/api/project/${projectId}`,
           { headers: { Authorization: `Bearer ${user.token}` } }
         );
         //console.log("Successfully deleted project:", projectId);
