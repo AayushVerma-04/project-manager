@@ -12,7 +12,7 @@ const Project = () => {
   const { projectId } = useParams();
   const { user } = useAuthContext();
   const navigate = useNavigate();
-  const [project, setProject] = useState(null); // New state to hold project details
+  const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -7,7 +7,10 @@ const {nanoid} = require('nanoid');
 const getProject = async (req,res) =>{
   try {
     const projectId = req.params.projectId
-    const project = await Project.findById(projectId).lean()
+    const project = await Project.findById(projectId)
+      .populate('tasks')  // This will populate the tasks array with full task documents
+      .lean()
+    
     if(!project){
       return res.status(404).json({ error: 'Project not found' });
     }

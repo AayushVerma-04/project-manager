@@ -10,7 +10,9 @@ const {
   leaveProject,
   deleteProject
 } = require('../controllers/projectControllers');
+
 const taskRouter = require('./taskRouter');
+const featureRouter = require("./featureRouter");
 
 const projectRouter = express.Router();
 
@@ -19,8 +21,6 @@ projectRouter.use(requireAuth);
 projectRouter.post('/', createProject);
 
 projectRouter.get('/:projectId', getProject);
-
-projectRouter.use('/:projectId/tasks', taskRouter)
 
 projectRouter.get('/:projectId/code', getCode);
 
@@ -33,5 +33,9 @@ projectRouter.post('/join', joinTeam);
 projectRouter.delete('/:projectId/leave', leaveProject);
 
 projectRouter.delete('/:projectId', deleteProject);
+
+projectRouter.use('/:projectId/tasks', taskRouter)
+
+projectRouter.use('/:projectId/features', featureRouter);
 
 module.exports = projectRouter;

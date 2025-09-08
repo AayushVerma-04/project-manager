@@ -9,10 +9,6 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required : false
   },
-  deadline: {
-    type: Date,
-    required : false
-  },
   status: {
     type: String,
     enum : ['todo', 'assigned', 'in-progress', 'completed'],
@@ -22,6 +18,11 @@ const taskSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     required: true,
     ref: 'Project'
+  },
+  featureId: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Feature',
+    default: null
   },
   assignedTo:{
     type: mongoose.Types.ObjectId,

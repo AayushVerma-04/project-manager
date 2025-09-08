@@ -2,6 +2,7 @@ const Task = require("../Models/taskModel");
 const User = require("../Models/userModel");
 const Project = require("../Models/projectModel");
 const mongoose = require("mongoose");
+const Feature = require("../Models/featureModel");
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -38,18 +39,56 @@ const changeTaskStatus = async (req, res) => {
 
 // Add new task to project
 const addTask = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const projectId = req.params.projectId;
-    const { title, description } = req.body;
+    const { title, description, featureId } = req.body;
 
-    const newTask = new Task({ title, description, projectId });
-    await newTask.save();
+    // Create new task
+    const newTask = new Task({ 
+      title, 
+      description, 
+      projectId, 
+      featureId 
+    });
 
-    await Project.findByIdAndUpdate(projectId, { $push: { tasks: newTask._id } });
+    // If task belongs to a feature, check if feature is assigned
+    if (featureId) {
+      const feature = await Feature.findById(featureId).session(session);
+      if (feature && feature.assignedTo) {
+        newTask.assignedTo = feature.assignedTo;
+        newTask.status = 'assigned';
+      }
+    }
+
+    await newTask.save({ session });
+
+    // Add task to project
+    await Project.findByIdAndUpdate(
+      projectId, 
+      { $push: { tasks: newTask._id } },
+      { session }
+    );
+
+    // If task was assigned, add it to user's tasks array
+    if (newTask.assignedTo) {
+      await User.findByIdAndUpdate(
+        newTask.assignedTo,
+        { $addToSet: { tasks: newTask._id } },
+        { session }
+      );
+    }
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(201).json(newTask);
   } catch (error) {
-    res.status(500).json({ error: error });
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).json({ error: "Failed to add task" });
   }
 };
 
