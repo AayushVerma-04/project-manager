@@ -56,7 +56,7 @@ const updateFeature = async (req, res) => {
 };
 
 
-// ✅ Delete feature (and related tasks, sub-features optional)
+// ✅ Delete feature recursively (with all sub-features + tasks)
 const deleteFeature = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -64,45 +64,45 @@ const deleteFeature = async (req, res) => {
   try {
     const { featureId } = req.params;
 
-    // Delete the feature itself
-    const feature = await Feature.findByIdAndDelete(featureId).session(session);
-    if (!feature) {
+    // Recursive helper to delete a feature and its descendants
+    const deleteFeatureRecursive = async (fid) => {
+      // Delete all tasks of this feature
+      await Task.deleteMany({ featureId: fid }).session(session);
+
+      // Find child sub-features
+      const children = await Feature.find({ parentFeatureId: fid }).session(session);
+
+      // Recursively delete each child
+      for (const child of children) {
+        await deleteFeatureRecursive(child._id);
+      }
+
+      // Finally delete the feature itself
+      await Feature.findByIdAndDelete(fid).session(session);
+    };
+
+    // First check if feature exists
+    const exists = await Feature.findById(featureId).session(session);
+    if (!exists) {
       await session.abortTransaction();
       session.endSession();
       return res.status(404).json({ error: "Feature not found" });
     }
 
-    // Find all tasks under this feature before deleting them
-    const tasksToDelete = await Task.find({ featureId }).session(session);
-    const taskIds = tasksToDelete.map(task => task._id);
-
-    // Remove tasks from users' task arrays
-    if (taskIds.length > 0) {
-      await User.updateMany(
-        { tasks: { $in: taskIds } },
-        { $pullAll: { tasks: taskIds } }
-      ).session(session);
-    }
-
-    // Delete tasks under this feature
-    await Task.deleteMany({ featureId }).session(session);
-
-    // Delete sub-features directly under this one (not recursive yet)
-    await Feature.deleteMany({ parentFeatureId: featureId }).session(session);
+    // Perform recursive delete
+    await deleteFeatureRecursive(featureId);
 
     await session.commitTransaction();
     session.endSession();
 
-    res.json({ 
-      message: "Feature and related tasks deleted",
-      tasksRemoved: taskIds.length
-    });
+    res.json({ message: "Feature and all sub-features & tasks deleted successfully" });
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 // ✅ Assign feature to a user (cascade tasks)
@@ -114,7 +114,7 @@ const assignFeature = async (req, res) => {
     const { featureId } = req.params;
     const { userId } = req.body;
 
-    // Update feature
+    // ✅ Update feature assignment
     const feature = await Feature.findByIdAndUpdate(
       featureId,
       { assignedTo: userId },
@@ -127,30 +127,19 @@ const assignFeature = async (req, res) => {
       return res.status(404).json({ error: "Feature not found" });
     }
 
-    // Find tasks under this feature
-    const tasks = await Task.find({ featureId: featureId }).session(session);
-    const taskIds = tasks.map(task => task._id);
-
-    // Update tasks under this feature
-    await Task.updateMany(
-      { featureId: featureId }, 
+    // ✅ Update only tasks that are NOT completed
+    const result = await Task.updateMany(
+      { featureId, status: { $ne: "completed" } },
       { assignedTo: userId }
-    ).session(session);
-
-    // Update user's tasks array
-    await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { tasks: { $each: taskIds } } },
-      { new: true }
     ).session(session);
 
     await session.commitTransaction();
     session.endSession();
 
-    res.json({ 
-      message: "Feature and tasks assigned successfully", 
+    res.json({
+      message: "Feature and non-completed tasks assigned successfully",
       feature,
-      tasksAssigned: tasks.length 
+      tasksAssigned: result.modifiedCount, // only count tasks actually updated
     });
   } catch (err) {
     await session.abortTransaction();
@@ -158,6 +147,7 @@ const assignFeature = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 module.exports = {
   createFeature,

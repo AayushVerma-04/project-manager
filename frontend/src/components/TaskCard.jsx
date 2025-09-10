@@ -9,8 +9,9 @@ const TaskCard = ({ task, teamMembers, onTaskUpdate, onTaskDelete }) => {
 
   // Function to handle the assignment dropdown change
   const handleAssignChange = (e) => {
-    const newAssignedTo = e.target.value === '' ? null : e.target.value;
-    const newStatus = newAssignedTo ? 'assigned' : 'todo';
+    const newAssignedTo = e.target.value === '' ? 'null' : e.target.value;
+    // console.log("Selected value:", newAssignedTo);
+    const newStatus = newAssignedTo === 'null' ? 'todo' : 'assigned';
     onTaskUpdate(task._id, { ...task, assignedTo: newAssignedTo, status: newStatus });
   };
 

@@ -101,8 +101,13 @@ const editTask = async (req, res) => {
     const task = await Task.findById(taskId);
     if (!task) return res.status(404).json({ error: "Task not found" });
 
+    if ((task.status === 'completed')  || (task.status === 'in-progress' && status !== 'completed')) {
+      return res.status(200).json(task);
+    }
+
     task.status = status || task.status; // Update status if provided
-    task.assignedTo = assignedTo || task.assignedTo; // Update assignedTo if provided
+    task.assignedTo = assignedTo === 'null' ? null : (assignedTo || task.assignedTo); // Handle unassignment
+    // task.assignedTo = assignedTo || task.assignedTo; // Update assignedTo if provided
     await task.save();
 
     res.status(200).json(task);

@@ -2,6 +2,7 @@ const Project = require('../Models/projectModel');
 const Task = require('../Models/taskModel');
 const User = require('../Models/userModel');
 const mongoose = require('mongoose');
+const Feature = require('../Models/featureModel');
 const {nanoid} = require('nanoid');
 
 const getProject = async (req,res) =>{
@@ -274,8 +275,11 @@ const deleteProject = async (req, res) => {
       { session }
     );
 
-    // Optionally, delete all tasks associated with the project
+    // delete all tasks associated with the project
     await Task.deleteMany({ projectId: project._id }).session(session);
+
+    // delete all features associated with the project
+    await Feature.deleteMany({ projectId: project._id }).session(session);
 
     // Delete the project itself
     await Project.findByIdAndDelete(projectId).session(session);
